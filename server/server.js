@@ -12,9 +12,9 @@ app.use("/list", (req, res) => {
     }
 });
 app.use("/list/:name", (req, res) => {
-    const found = Data.some((element) => element.name === parseInt(req.params.name));
+    const found = Data.some((element) => element.name === req.params.name);
     if (found) {
-        res.json(Data.filter((element) => element.name === parseInt(req.params.name)));
+        res.json(Data.filter((element) => element.name === req.params.name));
     } else {
         res.status(400).json({ msg: `No member with the name of ${req.params.name}` });
     }
