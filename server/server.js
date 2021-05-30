@@ -1,6 +1,8 @@
 import express from "express";
 import Data from "./data.js";
 import cors from "cors";
+import faker from "faker";
+import { v4 as uuidv4 } from "uuid";
 const app = express();
 
 
@@ -11,9 +13,26 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-
 app.use(cors());
+// create mailing list
 
+app.post("/lists", (req, res) => {
+  const num = uuidv4();
+  const newMailingList = {
+      id: typeof  parseInt(num) === "number" ? parseInt(num) : faker.datatype.number(),
+      name: req.body.name,
+      members: req.body.members,
+  };
+
+  if(!newMailingList.name || !newMailingList.members){
+      return res.status(400).json({ msg: "please make sure that you have added name and members." });
+  }
+  Data.push(newMailingList);
+  // res.json(messages)
+  res.redirect("/");
+});
+
+// update method
 app.put("/lists/:name", (req,res) => {
   const found = Data.some((list) => list.name === req.params.name);
   if(found){
