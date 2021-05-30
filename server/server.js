@@ -18,8 +18,9 @@ app.use(cors());
 
 app.post("/lists", (req, res) => {
   const num = uuidv4();
+  const newID = req.body.id;
   const newMailingList = {
-      id: typeof  parseInt(num) === "number" ? parseInt(num) : faker.datatype.number(),
+      id: typeof  newID === "number" ? newID : parseInt(num) || faker.datatype.number(),
       name: req.body.name,
       members: req.body.members,
   };
@@ -28,8 +29,8 @@ app.post("/lists", (req, res) => {
       return res.status(400).json({ msg: "please make sure that you have added name and members." });
   }
   Data.push(newMailingList);
-  // res.json(messages)
-  res.redirect("/");
+  res.json(newMailingList);
+  // res.redirect("/");
 });
 
 // update method
