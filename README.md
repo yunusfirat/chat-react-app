@@ -1,70 +1,150 @@
-# Getting Started with Create React App
+# Mailing List REST API
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+_**Credit:** This challenge was created by [Techtonica](https://github.com/Techtonica/curriculum). You can find the original [here](https://github.com/Techtonica/curriculum/blob/main/projects/mailing-list-rest-api.md)._
 
-## Available Scripts
+## Previous Knowledge & Difficulty
 
-In the project directory, you can run:
+To complete this challenge you should be able to
 
-### `npm start`
+- Create a `Node` Application
+- Use `Express` to setup endpoints
+- Understand what a `GET` & `PUT` Request are and how to use them using `Fetch`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This challenge is rated at **Easy to Medium**.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Tools
 
-### `npm test`
+You should create an Express app. All of this can be in-memory, no database or file storage needed.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Data
 
-### `npm run build`
+The data consists of mailing lists which have a name and an array of member email addresses.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```json
+[
+  {
+    "name": "staff",
+    "members": ["talea@techtonica.org", "michelle@techtonica.org"]
+  },
+  {
+    "name": "students",
+    "members": ["chris@techtonica.org", "hamid@techtonica.org"]
+  }
+]
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Routes
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Index
 
-### `npm run eject`
+#### Route
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+`/lists` - fetch all the existing list names
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### Response
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- 200 with a JSON body of all the existing list names
+- 200 and empty array if none exist (not a 404)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+#### Response Body
 
-## Learn More
+```json
+["staff", "students"]
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### Example Express Code
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```javascript
+const lists = new Map();
+// see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
 
-### Code Splitting
+// add some fake data
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+app.get("/lists", (req, res) => {
+  const listsArray = Array.from(lists.keys()); // Why is this like this? Try it out in your console.
+  res.send(listsArray);
+});
+```
 
-### Analyzing the Bundle Size
+### GET single list
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+#### Route
 
-### Making a Progressive Web App
+`/lists/:name` - get list by name, e.g. `/lists/staff`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+#### Response
 
-### Advanced Configuration
+- 200 with a JSON body (name and member emails) of the given list
+- 404 if not found
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+#### Response Body
 
-### Deployment
+```json
+{
+  "name": "staff",
+  "members": ["talea@techtonica.org", "michelle@techtonica.org"]
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### DELETE single list
 
-### `npm run build` fails to minify
+#### Route
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+`/lists/:name` - delete list by name
+
+##### Response
+
+- 200 if successfully deleted
+- 404 if not found to delete
+
+#### Response Body
+
+None needed
+
+### PUT - update single list
+
+#### Path
+
+`/lists/:name` - add or update a list with the given name
+
+#### Request Body
+
+```json
+{
+  "name": "my-new-list",
+  "members": ["me@me.com"]
+}
+```
+
+#### Response
+
+- 200 if it updated a list that already existed
+- 201 if it created a new list
+
+#### Response Body
+
+None
+
+#### Optional Extension
+
+What if the name in the path doesn't match the one in JSON body?? Sounds like an error case to me. Detect this case and pick an [appropriate status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors). (hint: if the client did something wrong in the request, it'll be 4xx)
+
+## Testing
+
+Use Postman to test retrieving, saving, and deleting mailing lists using your API.
+
+## Bonus Extension
+
+Some would say the more REST-ful way to manage the members of the list is to make them into a resource.
+
+After creating your pull request in your assignments repo, try this challenge!
+
+- `GET /lists/:name/members` => return array of emails only for a list
+- `PUT /lists/:name/members/:email` => make the supplies email a member of the list
+- `DELETE /lists/:name/members/:email` => remove the supplied email as a member of the list
+
+### Sidebar PUT vs. POST
+
+API's often use POST and PUT for updates. They have slightly different meanings. This [side-by-side comparison](https://restfulapi.net/rest-put-vs-post/) can be helpful but don't get too hung up on that at this stage.
+
+- `POST /lists/:name/members` with a body containing an email will add it to the list, even if it's already there
