@@ -1,5 +1,5 @@
 import express from "express";
-import { post, put, remove, listname, list, membersforname, updateEmail } from "../controller/mailinglist.js";
+import { post, put, remove, listname, list, membersforname, updateEmail, deleteEmail } from "../controller/mailinglist.js";
 const router = express.Router();
 
 // post request
@@ -19,8 +19,10 @@ router.get("/lists/:name/members", membersforname );
 
 
 // update email
-
 router.put("/lists/:name/members/:email", updateEmail);
+
+// delete email
+router.delete("/lists/:name/members/:email", deleteEmail);
 
 
 
