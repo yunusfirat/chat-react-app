@@ -72,3 +72,14 @@ export const list = (req, res) => {
         res.status(404);
     }
 };
+
+export const membersforname = (req, res) => {
+    const username = req.params.name;
+
+    const found = Data.some((element) => element.name === username);
+    if (found) {
+        res.json(Data.filter((element) => element.name === username)[0].members.join(","));
+    } else {
+        res.status(400).json({ msg: `No member with the name of ${req.params.name}` });
+    }
+};
