@@ -8,4 +8,5 @@ const Data = [
         "members": ["chris@techtonica.org", "hamid@techtonica.org"],
     },
 ];
-export default Data;
+
+module.exports = Data;

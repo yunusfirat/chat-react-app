@@ -1,11 +1,7 @@
 import express from "express";
-import Data from "./data.js";
 import cors from "cors";
-import faker from "faker";
-import { v4 as uuidv4 } from "uuid";
+import mailinglist from "./routes/mailinglist.js";
 const app = express();
-
-
 const PORT = process.env.PORT || 5000;
 
 
@@ -16,73 +12,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 // create mailing list
 
-app.post("/lists", (req, res) => {
-  const num = uuidv4();
-  const newID = req.body.id;
-  const newMailingList = {
-      id: typeof  newID === "number" ? newID : parseInt(num) || faker.datatype.number(),
-      name: req.body.name,
-      members: req.body.members,
-  };
+// post request
+app.use("/", mailinglist);
 
-  if(!newMailingList.name || !newMailingList.members){
-      return res.status(400).json({ msg: "please make sure that you have added name and members." });
-  }
-  Data.push(newMailingList);
-  res.json(newMailingList);
-  // res.redirect("/");
-});
-
-// update method
-app.put("/lists/:name", (req,res) => {
-  const found = Data.some((list) => list.name === req.params.name);
-  if(found){
-      const upList = req.body;
-      Data.forEach((list) => {
-          if(list.name === req.params.name ) {
-              list.name = upList.name ? upList.name : list.name;
-              list.members = upList.members ? upList.members : list.members;
-              res.json({ msg: "list updated", list });
-          }
-      });
-  }else {
-      res.status(400).json({ msg: `No message with the id of ${req.params.name}` });
-  }
-});
-
-app.delete("/lists/:name", function (req, res) {
-  let temp;
-  for (let i = 0; i < Data.length; i++){
-    if (Data[i].name === req.params.name){
-      temp = Data[i];
-        Data.splice(i,1);
-      }
-    }
-    if (temp === undefined){
-      console.log(temp);
-      res.status(404);
-      res.send(`The item ${req.params.name} is not exist`);
-    }else {
-      res.status(200);
-      res.send(`The item ${req.params.name} has been deleted`);
-    }
-  });
-
-app.use("/lists/:name", (req, res) => {
-    const found = Data.some((element) => element.name === req.params.name);
-    if (found) {
-        res.json(Data.filter((element) => element.name === req.params.name));
-    } else {
-        res.status(400).json({ msg: `No member with the name of ${req.params.name}` });
-    }
-});
-app.use("/lists", (req, res) => {
-    if (Data.length >= 0) {
-        res.status(200).json(Data.map((element) => element.name));
-    } else {
-        res.status(404);
-    }
-});
 
 
 
