@@ -80,6 +80,24 @@ export const membersforname = (req, res) => {
     if (found) {
         res.json(Data.filter((element) => element.name === username)[0].members.join(","));
     } else {
-        res.status(400).json({ msg: `No member with the name of ${req.params.name}` });
+        res.status(400).json({ msg: `No member with the name of ${username}` });
+    }
+};
+
+export const  updateEmail = (req, res) => {
+    const username = req.params.name;
+    const email = req.params.email;
+
+    const found = Data.some((list) => list.name === username);
+    if (found) {
+        const upList = req.body;
+        Data.forEach((list) => {
+            if (list.name === username && list.members.includes(email) )  {
+                list.members = upList.members ? upList.members : list.members;
+                res.json(list);
+            }
+        });
+    } else {
+        res.status(400).json({ msg: `No message with the id of ${req.params.name}` });
     }
 };
